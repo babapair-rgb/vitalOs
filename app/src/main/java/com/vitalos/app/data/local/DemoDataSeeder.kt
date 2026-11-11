@@ -70,7 +70,7 @@ class DemoDataSeeder(private val database: VitalOsDatabase) {
             SleepSessionEntity(
                 dateEpochDay = today,
                 startEpochMillis = now - 8 * 60 * 60_000L,
-                endEpochMillis = now - 1 * 60 * 60_000L,
+                endEpochMillis = (now - 8 * 60 * 60_000L) + 490 * 60_000L,
                 efficiencyPercent = 96.4,
                 awakenings = 0,
                 sleepScore = 91,
