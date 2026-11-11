@@ -13,7 +13,7 @@ fun VitalOsNavHost(navController: NavHostController, modifier: Modifier = Modifi
     NavHost(navController = navController, startDestination = VitalOsRoutes.HOME, modifier = modifier) {
         composable(VitalOsRoutes.HOME) { com.vitalos.app.feature.home.HomeScreen() }
         composable(VitalOsRoutes.ACTIVITY) { com.vitalos.app.feature.activity.ActivityScreen() }
-        composable(VitalOsRoutes.HEALTH) { ComingSoonScreen("Health") }
+        composable(VitalOsRoutes.HEALTH) { com.vitalos.app.feature.heart.HeartHealthScreen() }
         composable(VitalOsRoutes.INSIGHTS) { ComingSoonScreen("Insights") }
         composable(VitalOsRoutes.PROFILE) { ComingSoonScreen("Profile") }
         composable(VitalOsRoutes.WORKOUT_HUB) { ComingSoonScreen("Workout Hub") }
