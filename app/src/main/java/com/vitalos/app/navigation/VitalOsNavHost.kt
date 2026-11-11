@@ -11,7 +11,7 @@ import androidx.navigation.navArgument
 @Composable
 fun VitalOsNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(navController = navController, startDestination = VitalOsRoutes.HOME, modifier = modifier) {
-        composable(VitalOsRoutes.HOME) { ComingSoonScreen("Home") }
+        composable(VitalOsRoutes.HOME) { com.vitalos.app.feature.home.HomeScreen() }
         composable(VitalOsRoutes.ACTIVITY) { ComingSoonScreen("Activity") }
         composable(VitalOsRoutes.HEALTH) { ComingSoonScreen("Health") }
         composable(VitalOsRoutes.INSIGHTS) { ComingSoonScreen("Insights") }
