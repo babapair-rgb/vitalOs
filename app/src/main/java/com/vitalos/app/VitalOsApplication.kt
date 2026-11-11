@@ -28,6 +28,7 @@ class VitalOsApplication : Application(), Configuration.Provider {
         applicationScope.launch {
             DemoDataSeeder(database).seedIfEmpty()
         }
+        com.vitalos.app.sync.SyncScheduler.schedulePeriodicSync(this)
     }
 
     override val workManagerConfiguration: Configuration
