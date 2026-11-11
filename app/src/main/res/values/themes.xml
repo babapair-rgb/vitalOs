@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.VitalOS" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#090B0F</item>
+        <item name="android:navigationBarColor">#090B0F</item>
+        <item name="android:windowBackground">#090B0F</item>
+    </style>
+</resources>
