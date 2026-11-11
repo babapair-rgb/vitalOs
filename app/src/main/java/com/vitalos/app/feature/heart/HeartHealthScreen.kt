@@ -1,5 +1,6 @@
 package com.vitalos.app.feature.heart
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,7 +19,10 @@ import com.vitalos.app.components.VitalCard
 import com.vitalos.app.designsystem.VitalOsTheme
 
 @Composable
-fun HeartHealthScreen(viewModel: HeartHealthViewModel = hiltViewModel()) {
+fun HeartHealthScreen(
+    viewModel: HeartHealthViewModel = hiltViewModel(),
+    onOpenSleep: () -> Unit = {},
+) {
     val state by viewModel.uiState.collectAsState()
 
     LazyColumn(
@@ -56,6 +60,14 @@ fun HeartHealthScreen(viewModel: HeartHealthViewModel = hiltViewModel()) {
                         Text("${state.zoneMinutes[zone] ?: 0} min", style = VitalOsTheme.typography.dataTabularSm, color = VitalOsTheme.colors.textSecondary)
                     }
                 }
+            }
+        }
+
+        item {
+            VitalCard(
+                modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenSleep),
+            ) {
+                Text("View Sleep Intelligence →", style = VitalOsTheme.typography.bodyMd, color = VitalOsTheme.colors.recoveryMint)
             }
         }
     }

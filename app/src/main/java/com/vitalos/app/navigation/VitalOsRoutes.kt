@@ -12,6 +12,7 @@ object VitalOsRoutes {
     const val HOME = "home"
     const val ACTIVITY = "activity"
     const val HEALTH = "health"
+    const val SLEEP = "sleep"
     const val INSIGHTS = "insights"
     const val PROFILE = "profile"
     const val WORKOUT_HUB = "workout_hub"
