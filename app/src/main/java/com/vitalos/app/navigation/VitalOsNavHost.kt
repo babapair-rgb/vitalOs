@@ -19,15 +19,31 @@ fun VitalOsNavHost(navController: NavHostController, modifier: Modifier = Modifi
         composable(VitalOsRoutes.SLEEP) { com.vitalos.app.feature.sleep.SleepScreen() }
         composable(VitalOsRoutes.INSIGHTS) { ComingSoonScreen("Insights") }
         composable(VitalOsRoutes.PROFILE) { ComingSoonScreen("Profile") }
-        composable(VitalOsRoutes.WORKOUT_HUB) { ComingSoonScreen("Workout Hub") }
+        composable(VitalOsRoutes.WORKOUT_HUB) {
+            com.vitalos.app.feature.workout.WorkoutHubScreen(
+                onStartYoga = { workoutId -> navController.navigate(VitalOsRoutes.workoutActive(workoutId)) },
+            )
+        }
         composable(
             VitalOsRoutes.WORKOUT_ACTIVE,
             arguments = listOf(navArgument("workoutId") { type = NavType.LongType }),
-        ) { ComingSoonScreen("Active Session") }
+        ) {
+            com.vitalos.app.feature.workout.ActiveSessionScreen(
+                onEnded = { workoutId ->
+                    navController.navigate(VitalOsRoutes.workoutSummary(workoutId)) {
+                        popUpTo(VitalOsRoutes.WORKOUT_HUB)
+                    }
+                },
+            )
+        }
         composable(
             VitalOsRoutes.WORKOUT_SUMMARY,
             arguments = listOf(navArgument("workoutId") { type = NavType.LongType }),
-        ) { ComingSoonScreen("Workout Summary") }
+        ) {
+            com.vitalos.app.feature.workout.WorkoutSummaryScreen(
+                onDone = { navController.popBackStack(VitalOsRoutes.HOME, inclusive = false) },
+            )
+        }
         composable(VitalOsRoutes.DEVICE_MANAGEMENT) { ComingSoonScreen("TAGG Verve") }
     }
 }
