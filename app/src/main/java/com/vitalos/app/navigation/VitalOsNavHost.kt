@@ -11,7 +11,9 @@ import androidx.navigation.navArgument
 @Composable
 fun VitalOsNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(navController = navController, startDestination = VitalOsRoutes.HOME, modifier = modifier) {
-        composable(VitalOsRoutes.HOME) { com.vitalos.app.feature.home.HomeScreen() }
+        composable(VitalOsRoutes.HOME) {
+            com.vitalos.app.feature.home.HomeScreen(onOpenDeviceManagement = { navController.navigate(VitalOsRoutes.DEVICE_MANAGEMENT) })
+        }
         composable(VitalOsRoutes.ACTIVITY) { com.vitalos.app.feature.activity.ActivityScreen() }
         composable(VitalOsRoutes.HEALTH) {
             com.vitalos.app.feature.heart.HeartHealthScreen(onOpenSleep = { navController.navigate(VitalOsRoutes.SLEEP) })
@@ -44,6 +46,6 @@ fun VitalOsNavHost(navController: NavHostController, modifier: Modifier = Modifi
                 onDone = { navController.popBackStack(VitalOsRoutes.HOME, inclusive = false) },
             )
         }
-        composable(VitalOsRoutes.DEVICE_MANAGEMENT) { ComingSoonScreen("TAGG Verve") }
+        composable(VitalOsRoutes.DEVICE_MANAGEMENT) { com.vitalos.app.feature.device.DeviceManagementScreen() }
     }
 }

@@ -1,5 +1,6 @@
 package com.vitalos.app.feature.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +27,10 @@ import com.vitalos.app.designsystem.VitalOsTheme
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onOpenDeviceManagement: () -> Unit = {},
+) {
     val state by viewModel.uiState.collectAsState()
 
     LazyColumn(
@@ -48,6 +52,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     text = if (state.bleConnected) "TAGG Verve · Connected" else "TAGG Verve · ${state.bleStatusLabel}",
                     dotColor = if (state.bleConnected) VitalOsTheme.colors.readinessLime else VitalOsTheme.colors.textDisabled,
                     pulsing = state.bleConnected,
+                    modifier = Modifier.clickable(onClick = onOpenDeviceManagement),
                 )
             }
         }
