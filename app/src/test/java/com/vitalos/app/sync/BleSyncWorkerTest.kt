@@ -35,7 +35,7 @@ class BleSyncWorkerTest {
     }
 
     @Test
-    fun doWork_whenSyncFails_returnsRetry() = runTest {
+    fun doWork_whenNotConnected_stillReturnsSuccessRatherThanRetryingForever() = runTest {
         val fakeBle = FakeBleRepository().apply {
             syncResult = SyncResult(recordsMerged = 0, success = false, errorMessage = "No connected device")
         }
@@ -49,6 +49,9 @@ class BleSyncWorkerTest {
 
         val result = worker.doWork()
 
-        assertEquals(ListenableWorker.Result.retry(), result)
+        // "Not connected" is a normal, retry-pointless outcome (no persisted pairing on a fresh
+        // process), not a worker failure, so this must not trigger WorkManager's retry/backoff.
+        assertEquals(ListenableWorker.Result.success(), result)
+        assert(fakeBle.syncCalled)
     }
 }

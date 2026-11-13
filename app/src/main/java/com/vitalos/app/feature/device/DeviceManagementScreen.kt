@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -46,7 +47,7 @@ fun DeviceManagementScreen(viewModel: DeviceManagementViewModel = hiltViewModel(
                     Text("Battery: $it%", style = VitalOsTheme.typography.bodyMd, color = VitalOsTheme.colors.textSecondary)
                 }
                 state.lastSyncEpochMillis?.let {
-                    Text("Last sync: ${it}ms epoch", style = VitalOsTheme.typography.bodySm, color = VitalOsTheme.colors.textSecondary)
+                    Text("Last sync: ${formatTimestamp(it)}", style = VitalOsTheme.typography.bodySm, color = VitalOsTheme.colors.textSecondary)
                 }
             }
         }
@@ -82,12 +83,26 @@ fun DeviceManagementScreen(viewModel: DeviceManagementViewModel = hiltViewModel(
             VitalCard(modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(if (log.success) "${log.recordsMerged} records merged" else "Sync failed", style = VitalOsTheme.typography.bodyMd, color = if (log.success) VitalOsTheme.colors.onSurface else VitalOsTheme.colors.criticalRed)
-                    Text("${log.timestampEpochMillis}", style = VitalOsTheme.typography.dataTabularSm, color = VitalOsTheme.colors.textSecondary)
+                    Text(formatTimestamp(log.timestampEpochMillis), style = VitalOsTheme.typography.dataTabularSm, color = VitalOsTheme.colors.textSecondary)
                 }
                 log.errorMessage?.let {
                     Text(it, style = VitalOsTheme.typography.bodySm, color = VitalOsTheme.colors.criticalRed)
                 }
             }
         }
+
+        item {
+            Text(
+                "Demonstration data",
+                style = VitalOsTheme.typography.dataTabularSm,
+                color = VitalOsTheme.colors.textSecondary,
+                modifier = Modifier.fillMaxWidth().padding(top = VitalOsTheme.spacing.sm),
+            )
+        }
     }
+}
+
+private fun formatTimestamp(epochMillis: Long): String {
+    val formatter = java.text.SimpleDateFormat("MMM d, h:mm a", java.util.Locale.getDefault())
+    return formatter.format(java.util.Date(epochMillis))
 }

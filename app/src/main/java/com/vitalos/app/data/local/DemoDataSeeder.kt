@@ -11,6 +11,8 @@ import com.vitalos.app.data.local.entity.SleepStageType
 import com.vitalos.app.data.local.entity.WorkoutSessionEntity
 import com.vitalos.app.data.local.entity.WorkoutStatus
 import com.vitalos.app.data.local.entity.WorkoutType
+import androidx.room.withTransaction
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import kotlin.random.Random
 
@@ -19,6 +21,12 @@ class DemoDataSeeder(private val database: VitalOsDatabase) {
     suspend fun seedIfEmpty() {
         if (database.profileDao().count() > 0) return
 
+        database.withTransaction {
+            seedHistoricalData()
+        }
+    }
+
+    private suspend fun seedHistoricalData() {
         val today = LocalDate.now().toEpochDay()
         val now = System.currentTimeMillis()
         val random = Random(seed = 42)
@@ -101,5 +109,58 @@ class DemoDataSeeder(private val database: VitalOsDatabase) {
         database.deviceSyncLogDao().insert(
             DeviceSyncLogEntity(timestampEpochMillis = now - 4 * 60_000L, recordsMerged = 42, success = true, errorMessage = null),
         )
+    }
+
+    /**
+     * Keeps "today" populated on every app launch, not just the first one. [seedIfEmpty] only
+     * ever runs once (guarded by the profile count), and all of its rows are anchored to the
+     * install-day "today" - so the day after install, every screen querying "today's" data finds
+     * nothing and renders zeros/empty states. This is idempotent and cheap, so it's safe to call
+     * unconditionally on every launch.
+     */
+    suspend fun ensureTodayIsPopulated() {
+        val today = LocalDate.now().toEpochDay()
+        if (database.dailyMetricsDao().observeByDate(today).first() != null) return
+
+        database.withTransaction {
+            // Re-check inside the transaction in case another launch raced us to it.
+            if (database.dailyMetricsDao().observeByDate(today).first() != null) return@withTransaction
+
+            val random = Random(seed = today) // deterministic per-day, not reusing the historical seed's state
+
+            val mostRecent = database.dailyMetricsDao().observeRange(today - 13, today).first()
+                .maxByOrNull { it.dateEpochDay }
+            val template = mostRecent ?: DailyMetricsSnapshotEntity(
+                dateEpochDay = today, readinessPercent = 80, healthScore = 80, strainTarget = 14.0,
+                steps = 7000, distanceMeters = 5000.0, activeCalories = 350, hydrationMl = 1500,
+                proteinGrams = 120, carbsGrams = 150, fatGrams = 50, calorieTarget = 2400, caloriesConsumed = 1800,
+            )
+            database.dailyMetricsDao().upsert(template.copy(dateEpochDay = today))
+
+            val hourlyActivity = (6..21).map { hour ->
+                ActivitySampleEntity(dateEpochDay = today, hourOfDay = hour, steps = random.nextInt(0, 1200), intensity = random.nextInt(0, 4))
+            }
+            database.activityDao().upsertAll(hourlyActivity)
+
+            val now = System.currentTimeMillis()
+            val sessionId = database.sleepDao().insertSession(
+                SleepSessionEntity(
+                    dateEpochDay = today,
+                    startEpochMillis = now - 8 * 60 * 60_000L,
+                    endEpochMillis = (now - 8 * 60 * 60_000L) + 490 * 60_000L,
+                    efficiencyPercent = 96.0,
+                    awakenings = 0,
+                    sleepScore = 88,
+                ),
+            )
+            database.sleepDao().insertSegments(
+                listOf(
+                    SleepStageSegmentEntity(sessionId = sessionId, stage = SleepStageType.AWAKE, durationMinutes = 22, orderIndex = 0),
+                    SleepStageSegmentEntity(sessionId = sessionId, stage = SleepStageType.LIGHT, durationMinutes = 236, orderIndex = 1),
+                    SleepStageSegmentEntity(sessionId = sessionId, stage = SleepStageType.REM, durationMinutes = 130, orderIndex = 2),
+                    SleepStageSegmentEntity(sessionId = sessionId, stage = SleepStageType.DEEP, durationMinutes = 102, orderIndex = 3),
+                ),
+            )
+        }
     }
 }

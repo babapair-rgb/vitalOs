@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +57,15 @@ fun SleepScreen(viewModel: SleepViewModel = hiltViewModel()) {
                 Text("WEEKLY SCORES", style = VitalOsTheme.typography.labelCaps, color = VitalOsTheme.colors.textSecondary)
                 Text(state.weeklyScores.joinToString(" · "), style = VitalOsTheme.typography.dataTabularSm, color = VitalOsTheme.colors.onSurface)
             }
+        }
+
+        item {
+            Text(
+                "Demonstration data",
+                style = VitalOsTheme.typography.dataTabularSm,
+                color = VitalOsTheme.colors.textSecondary,
+                modifier = Modifier.fillMaxWidth().padding(top = VitalOsTheme.spacing.sm),
+            )
         }
     }
 }

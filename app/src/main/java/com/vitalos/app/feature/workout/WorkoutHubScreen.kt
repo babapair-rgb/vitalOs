@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -50,6 +51,15 @@ fun WorkoutHubScreen(
                     Text("${workout.durationSeconds / 60} min · ${workout.estimatedCalories} kcal", style = VitalOsTheme.typography.dataTabularSm, color = VitalOsTheme.colors.textSecondary)
                 }
             }
+        }
+
+        item {
+            Text(
+                "Demonstration data",
+                style = VitalOsTheme.typography.dataTabularSm,
+                color = VitalOsTheme.colors.textSecondary,
+                modifier = Modifier.fillMaxWidth().padding(top = VitalOsTheme.spacing.sm),
+            )
         }
     }
 }

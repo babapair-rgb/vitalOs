@@ -16,7 +16,7 @@ class BleSyncWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val result = bleRepository.sync()
-        return if (result.success) Result.success() else Result.retry()
+        bleRepository.sync()
+        return Result.success()
     }
 }

@@ -5,10 +5,9 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.vitalos.app.data.local.DemoDataSeeder
 import com.vitalos.app.data.local.VitalOsDatabase
+import com.vitalos.app.di.ApplicationScope
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,12 +20,16 @@ class VitalOsApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var database: VitalOsDatabase
 
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    @Inject
+    @ApplicationScope
+    lateinit var applicationScope: CoroutineScope
 
     override fun onCreate() {
         super.onCreate()
         applicationScope.launch {
-            DemoDataSeeder(database).seedIfEmpty()
+            val seeder = DemoDataSeeder(database)
+            seeder.seedIfEmpty()
+            seeder.ensureTodayIsPopulated()
         }
         com.vitalos.app.sync.SyncScheduler.schedulePeriodicSync(this)
     }

@@ -66,10 +66,8 @@ private fun VitalOsAppScaffold() {
                 }
             },
             onStartYoga = {
-                quickAddViewModel.startYogaSession { workoutId ->
-                    showQuickAdd = false
-                    navController.navigate(VitalOsRoutes.workoutActive(workoutId))
-                }
+                showQuickAdd = false
+                navController.navigate(VitalOsRoutes.WORKOUT_HUB)
             },
             onRecordMeal = {
                 showQuickAdd = false

@@ -24,7 +24,8 @@ fun SleepHypnogramBar(
     segments: List<SleepStageSegmentEntity>,
     modifier: Modifier = Modifier,
 ) {
-    val totalMinutes = segments.sumOf { it.durationMinutes }.coerceAtLeast(1)
+    val renderableSegments = segments.filter { it.durationMinutes > 0 }
+    val totalMinutes = renderableSegments.sumOf { it.durationMinutes }.coerceAtLeast(1)
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -32,7 +33,7 @@ fun SleepHypnogramBar(
             .clip(VitalOsTheme.shapes.pill)
             .background(VitalOsTheme.colors.surfaceContainerHighest),
     ) {
-        segments.forEach { segment ->
+        renderableSegments.forEach { segment ->
             androidx.compose.foundation.layout.Box(
                 modifier = Modifier
                     .weight(segment.durationMinutes.toFloat() / totalMinutes)

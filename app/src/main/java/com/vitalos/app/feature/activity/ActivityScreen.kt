@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -75,6 +76,15 @@ fun ActivityScreen(viewModel: ActivityViewModel = hiltViewModel()) {
                 }
                 Text("Streak: ${state.streakDays} days ≥ 8,000 steps", style = VitalOsTheme.typography.bodySm, color = VitalOsTheme.colors.recoveryMint)
             }
+        }
+
+        item {
+            Text(
+                "Demonstration data",
+                style = VitalOsTheme.typography.dataTabularSm,
+                color = VitalOsTheme.colors.textSecondary,
+                modifier = Modifier.fillMaxWidth().padding(top = VitalOsTheme.spacing.sm),
+            )
         }
     }
 }

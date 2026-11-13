@@ -23,9 +23,11 @@ abstract class BleModule {
     companion object {
         @Provides
         @Singleton
+        @ApplicationScope
         fun provideApplicationScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
         @Provides
+        @DefaultDispatcher
         fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
     }
 }
