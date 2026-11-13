@@ -40,4 +40,5 @@ interface HealthDataRepository {
         status: WorkoutStatus,
     )
     suspend fun addWaterIntake(ml: Int)
+    suspend fun updateProfile(name: String, dailyStepGoal: Int, dailyHydrationGoalMl: Int, dailyCalorieGoal: Int)
 }

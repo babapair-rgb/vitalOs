@@ -96,4 +96,25 @@ class HealthDataRepositoryImplTest {
             assertEquals(750, awaitItem()?.hydrationMl)
         }
     }
+
+    @Test
+    fun updateProfile_whenProfileExists_updatesNameAndGoalsButKeepsTierBadge() = runTest {
+        db.profileDao().upsert(
+            com.vitalos.app.data.local.entity.ProfileEntity(
+                name = "Alex", tierBadge = "PRO LAB", dailyStepGoal = 10000,
+                dailyHydrationGoalMl = 3000, dailyCalorieGoal = 2400,
+            ),
+        )
+
+        repository.updateProfile(name = "Jordan", dailyStepGoal = 8000, dailyHydrationGoalMl = 2500, dailyCalorieGoal = 2200)
+
+        repository.observeProfile().test {
+            val profile = awaitItem()
+            assertEquals("Jordan", profile?.name)
+            assertEquals(8000, profile?.dailyStepGoal)
+            assertEquals(2500, profile?.dailyHydrationGoalMl)
+            assertEquals(2200, profile?.dailyCalorieGoal)
+            assertEquals("PRO LAB", profile?.tierBadge)
+        }
+    }
 }

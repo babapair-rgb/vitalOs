@@ -62,4 +62,17 @@ class FakeHealthDataRepository : HealthDataRepository {
     override suspend fun addWaterIntake(ml: Int) {
         waterAddedMl += ml
     }
+
+    override suspend fun updateProfile(name: String, dailyStepGoal: Int, dailyHydrationGoalMl: Int, dailyCalorieGoal: Int) {
+        val current = profileFlow.value
+        profileFlow.value = (current ?: ProfileEntity(
+            name = name, tierBadge = "PRO LAB", dailyStepGoal = dailyStepGoal,
+            dailyHydrationGoalMl = dailyHydrationGoalMl, dailyCalorieGoal = dailyCalorieGoal,
+        )).copy(
+            name = name,
+            dailyStepGoal = dailyStepGoal,
+            dailyHydrationGoalMl = dailyHydrationGoalMl,
+            dailyCalorieGoal = dailyCalorieGoal,
+        )
+    }
 }

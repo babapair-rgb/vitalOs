@@ -127,4 +127,18 @@ class HealthDataRepositoryImpl @Inject constructor(
         )).copy(hydrationMl = (current?.hydrationMl ?: 0) + ml)
         dailyMetricsDao.upsert(updated)
     }
+
+    override suspend fun updateProfile(name: String, dailyStepGoal: Int, dailyHydrationGoalMl: Int, dailyCalorieGoal: Int) {
+        val current = profileDao.observe().first()
+        val updated = (current ?: ProfileEntity(
+            name = name, tierBadge = "PRO LAB", dailyStepGoal = dailyStepGoal,
+            dailyHydrationGoalMl = dailyHydrationGoalMl, dailyCalorieGoal = dailyCalorieGoal,
+        )).copy(
+            name = name,
+            dailyStepGoal = dailyStepGoal,
+            dailyHydrationGoalMl = dailyHydrationGoalMl,
+            dailyCalorieGoal = dailyCalorieGoal,
+        )
+        profileDao.upsert(updated)
+    }
 }

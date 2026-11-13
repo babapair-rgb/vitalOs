@@ -20,7 +20,7 @@ fun VitalOsNavHost(navController: NavHostController, modifier: Modifier = Modifi
         }
         composable(VitalOsRoutes.SLEEP) { com.vitalos.app.feature.sleep.SleepScreen() }
         composable(VitalOsRoutes.INSIGHTS) { ComingSoonScreen("Insights") }
-        composable(VitalOsRoutes.PROFILE) { ComingSoonScreen("Profile") }
+        composable(VitalOsRoutes.PROFILE) { com.vitalos.app.feature.profile.ProfileScreen() }
         composable(VitalOsRoutes.WORKOUT_HUB) {
             com.vitalos.app.feature.workout.WorkoutHubScreen(
                 onStartYoga = { workoutId -> navController.navigate(VitalOsRoutes.workoutActive(workoutId)) },
