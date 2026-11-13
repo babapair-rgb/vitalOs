@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -51,20 +53,35 @@ fun VitalOsBottomBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             val leftItems = BottomNavItem.items.take(2)
             val rightItems = BottomNavItem.items.takeLast(3)
 
-            leftItems.forEach { item ->
-                BottomNavTab(item, currentRoute?.hierarchy?.any { it.route == item.route } == true) {
-                    navController.navigateToTab(item.route)
+            Row(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                leftItems.forEach { item ->
+                    BottomNavTab(item, currentRoute?.hierarchy?.any { it.route == item.route } == true) {
+                        navController.navigateToTab(item.route)
+                    }
                 }
             }
-            Box(modifier = Modifier.size(56.dp))
-            rightItems.forEach { item ->
-                BottomNavTab(item, currentRoute?.hierarchy?.any { it.route == item.route } == true) {
-                    navController.navigateToTab(item.route)
+            // Fixed-width gap exactly centered on the full-width Row (both side Rows share
+            // weight(1f)), so it always lines up with the FAB below regardless of each tab's
+            // own label width.
+            Box(modifier = Modifier.width(56.dp).fillMaxHeight())
+            Row(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                rightItems.forEach { item ->
+                    BottomNavTab(item, currentRoute?.hierarchy?.any { it.route == item.route } == true) {
+                        navController.navigateToTab(item.route)
+                    }
                 }
             }
         }
