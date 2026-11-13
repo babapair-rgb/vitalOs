@@ -78,7 +78,9 @@ class MockTaggVerveBleRepository @Inject constructor(
     override suspend fun sync(): SyncResult {
         val current = _connectionState.value
         if (current.phase != BleConnectionPhase.CONNECTED) {
-            return logAndReturnFailure(recordsMerged = 0, errorMessage = "No connected device")
+            // Not a genuine sync attempt - there's nothing to do, so don't flood the sync-history
+            // log with a "failure" row every time the periodic worker fires while unpaired.
+            return SyncResult(recordsMerged = 0, success = false, errorMessage = "No connected device")
         }
         _connectionState.value = current.copy(phase = BleConnectionPhase.SYNCING)
         delay(400)

@@ -104,16 +104,17 @@ class MockTaggVerveBleRepositoryTest {
     }
 
     @Test
-    fun sync_whenNotConnected_doesNotRetryForeverAndStillLogsTheOutcome() = scope.runTest {
+    fun sync_whenNotConnected_returnsFailureWithoutLoggingAnOutcome() = scope.runTest {
         val repo = newRepository()
 
         val result = repo.sync()
 
         assertEquals(false, result.success)
         assertEquals("No connected device", result.errorMessage)
+        // Not a genuine sync attempt - nothing to log, so the periodic worker firing while
+        // unpaired doesn't flood the sync-history log with "No connected device" rows.
         val logs = db.deviceSyncLogDao().observeRecent(10).first()
-        assertEquals(1, logs.size)
-        assertEquals(false, logs.first().success)
+        assertEquals(0, logs.size)
     }
 
     @Test

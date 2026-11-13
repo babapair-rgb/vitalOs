@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.vitalos.app.data.local.entity.DailyMetricsSnapshotEntity
+import com.vitalos.app.data.local.entity.HeartRateSampleEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -96,5 +97,45 @@ class DemoDataSeederTest {
         assertNotNull(db.dailyMetricsDao().observeByDate(today).first())
         assertTrue(db.activityDao().observeForDate(today).first().isNotEmpty())
         assertEquals(1, db.sleepDao().countSessions())
+    }
+
+    @Test
+    fun ensureTodayIsPopulated_whenHeartRateIsStale_insertsFreshSamples() = runTest {
+        val today = LocalDate.now().toEpochDay()
+        // Today's snapshot already exists (e.g. from a previous launch, or a water-intake tap
+        // that created a zero-filled row), but heart-rate samples are stale - this must be
+        // checked independently of the "today" snapshot check, not gated on it.
+        db.profileDao().upsert(com.vitalos.app.data.local.entity.ProfileEntity(name = "Alex", tierBadge = "PRO LAB", dailyStepGoal = 10000, dailyHydrationGoalMl = 3000, dailyCalorieGoal = 2400))
+        db.dailyMetricsDao().upsert(
+            DailyMetricsSnapshotEntity(
+                dateEpochDay = today, readinessPercent = 75, healthScore = 75, strainTarget = 12.0,
+                steps = 6000, distanceMeters = 4000.0, activeCalories = 320, hydrationMl = 1800,
+                proteinGrams = 110, carbsGrams = 140, fatGrams = 45, calorieTarget = 2400, caloriesConsumed = 1700,
+            ),
+        )
+        val staleCutoff = System.currentTimeMillis() - 60 * 60_000L
+        db.heartRateDao().insertAll(
+            listOf(HeartRateSampleEntity(timestampEpochMillis = staleCutoff, bpm = 70, isResting = true)),
+        )
+        val countBefore = db.heartRateDao().count()
+        assertEquals(0, db.heartRateDao().observeSince(System.currentTimeMillis() - 30 * 60_000L).first().size)
+
+        seeder.ensureTodayIsPopulated()
+
+        assertTrue(db.heartRateDao().count() > countBefore)
+        assertTrue(db.heartRateDao().observeSince(System.currentTimeMillis() - 30 * 60_000L).first().isNotEmpty())
+        // The "today" snapshot check was a no-op (it already existed) - only heart rate changed.
+        assertEquals(1, db.dailyMetricsDao().count())
+    }
+
+    @Test
+    fun ensureTodayIsPopulated_whenHeartRateIsRecent_isANoOpForHeartRate() = runTest {
+        seeder.seedIfEmpty()
+        // seedIfEmpty() already seeds heart-rate samples up through "now", so they're fresh.
+        val countBefore = db.heartRateDao().count()
+
+        seeder.ensureTodayIsPopulated()
+
+        assertEquals(countBefore, db.heartRateDao().count())
     }
 }
